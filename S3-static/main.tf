@@ -1,42 +1,87 @@
-provider "aws" {
-  region     = var.region
-  access_key = var.access_key
-  secret_key = var.secret_key
+resource "aws_s3_bucket" "resume-bucket"{
+    bucket = var.my-bucket-name
 }
 
-##### Creating a Random String #####
-resource "random_string" "random" {
-  length = 6
-  special = false
-  upper = false
-} 
 
-##### Creating an S3 Bucket #####
-resource "aws_s3_bucket" "CRbucket" {
-  bucket = "resume-${random_string.random.result}"
-  force_destroy = true
-}
+resource "aws_s3_bucket_ownership_controls" "ownership" {
+  bucket = aws_s3_bucket.resume-bucket.id
 
-resource "aws_s3_bucket_website_configuration" "blog" {
-  bucket = aws_s3_bucket.bucket.id
-  index_document {
-    suffix = "index.html"
+  rule {
+    object_ownership = "BucketOwnerPreferred"
   }
+}
 
 
-resource "aws_s3_bucket_public_access_block" "public_access_block" {
-  bucket = aws_s3_bucket.bucket.id
+
+resource "aws_s3_bucket_public_access_block" "public_access" {
+  bucket = aws_s3_bucket.resume-bucket.id
+
   block_public_acls       = false
   block_public_policy     = false
   ignore_public_acls      = false
   restrict_public_buckets = false
 }
 
-##### will upload all the files present under HTML folder to the S3 bucket #####
-resource "aws_s3_object" "upload_object" {
-  for_each      = fileset("html/", "*")
-  bucket        = aws_s3_bucket.bucket.id
-  key           = each.value
-  source        = "html/${each.value}"
-  etag          = filemd5("html/${each.value}")
-  content_type  = "text/html"
+resource "aws_s3_bucket_acl" "acl" {
+  depends_on = [
+    aws_s3_bucket_ownership_controls.ownership,
+    aws_s3_bucket_public_access_block.public_access,
+  ]
+
+  bucket = aws_s3_bucket.resume-bucket.id
+
+  acl    = "public-read"
+}
+
+
+resource "aws_s3_bucket_policy" "bucket_policy" {
+  bucket = aws_s3_bucket.resume-bucket.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect    = "Allow"
+        Principal = "*"
+        Action = [
+          "s3:GetObject"
+        ]
+        Resource = [
+          "arn:aws:s3:::${var.my-bucket-name}/*"
+        ]
+      }
+    ]
+  })
+}
+
+module "template_files"{
+    source = "hashicorp/dir/template"
+    base_dir = "${path.module}/website"
+}
+
+resource "aws_s3_bucket_website_configuration" "web-config" {
+  bucket = aws_s3_bucket.resume-bucket.id
+
+
+  index_document {
+    suffix = "index.html"
+  }
+
+ 
+resource "aws_s3_bucket_object" "static_files" {
+  for_each = module.template_files.files
+
+  bucket       = aws_s3_bucket.resume-bucket.id
+  key          = each.key
+  content_type = each.value.content_type
+
+  # The template_files module guarantees that only one of these two attributes
+  # will be set for each file, depending on whether it is an in-memory template
+  # rendering result or a static file on disk.
+  source  = each.value.source_path
+  content = each.value.content
+
+  # Unless the bucket has encryption enabled, the ETag of each object is an
+  # MD5 hash of that object.
+  etag = each.value.digests.md5
+}
