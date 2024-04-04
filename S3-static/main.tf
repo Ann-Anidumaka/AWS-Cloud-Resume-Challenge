@@ -1,17 +1,17 @@
 
-resource "aws_s3_bucket" "resume-bucket" {
+resource "aws_s3_bucket" "unique-cloud-resume-bucket-040424" {
   bucket = var.my-bucket-name
 }
 
 resource "aws_s3_bucket_ownership_controls" "ownership" {
-  bucket = aws_s3_bucket.resume-bucket.id
+  bucket = aws_s3_bucket.unique-cloud-resume-bucket-040424.id
   rule {
     object_ownership = "BucketOwnerPreferred"
   }
 }
 
 resource "aws_s3_bucket_public_access_block" "public_access" {
-  bucket = aws_s3_bucket.resume-bucket.id
+  bucket = aws_s3_bucket.unique-cloud-resume-bucket-040424.id
 
   block_public_acls       = false
   block_public_policy     = false
@@ -25,12 +25,12 @@ resource "aws_s3_bucket_acl" "acl" {
     aws_s3_bucket_public_access_block.public_access,
   ]
 
-  bucket = aws_s3_bucket.resume-bucket.id
+  bucket = aws_s3_bucket.unique-cloud-resume-bucket-040424.id
   acl    = "public-read"
 }
 
 resource "aws_s3_bucket_policy" "bucket_policy" {
-  bucket = aws_s3_bucket.resume-bucket.id
+  bucket = aws_s3_bucket.unique-cloud-resume-bucket-040424.id
 
   policy = jsonencode({
     Version   = "2012-10-17"
@@ -52,7 +52,7 @@ module "template_files" {
 }
 
 resource "aws_s3_bucket_website_configuration" "web-config" {
-  bucket = aws_s3_bucket.resume-bucket.id
+  bucket = aws_s3_bucket.unique-cloud-resume-bucket-040424.id
 
   index_document {
     suffix = "index.html"
@@ -61,7 +61,7 @@ resource "aws_s3_bucket_website_configuration" "web-config" {
 
 # AWS S3 object resource for hosting bucket files
 resource "aws_s3_object" "Bucket_files" {
-  bucket =  aws_s3_bucket.resume-bucket.id  # ID of the S3 bucket
+  bucket =  aws_s3_bucket.unique-cloud-resume-bucket-040424.id  # ID of the S3 bucket
 
   for_each     = module.template_files.files
   key          = each.key
