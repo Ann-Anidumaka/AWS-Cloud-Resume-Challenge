@@ -177,3 +177,27 @@ resource "aws_cloudfront_distribution" "cf_s3_distribution" {
     cloudfront_default_certificate = true
   }
 }
+
+# Dynamo DB
+resource "aws_dynamodb_table" "resume_table" {
+  name           = "cloud_resume"
+  billing_mode   = "PAY_PER_REQUEST"
+  hash_key       = "id"
+
+  attribute {
+    name = "id"
+    type = "N"
+  }
+
+  attribute {
+    name = "views"
+    type = "N"
+  }
+
+  ttl {
+    attribute_name = "TimeToExist"
+    enabled        = true
+  }
+}
+
+#Lambda
