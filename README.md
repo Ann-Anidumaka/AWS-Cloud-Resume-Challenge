@@ -13,3 +13,5 @@ Whenever a push occurs to the Main branch, it activates the GitHub actions I've 
 
 
 to put my understanding of Terraform, i will configure and provision all the infrastructures with it.
+
+![Cloud Resume - Page 1](https://github.com/Ann-Anidumaka/AWS-Cloud-Resume-Challenge/assets/132375232/45988ea9-07ea-4ad4-80ad-54db442d9347)
