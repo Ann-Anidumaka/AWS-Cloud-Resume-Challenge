@@ -9,7 +9,6 @@ Whenever a push occurs to the Main branch, it activates the GitHub actions I've 
 * Execute 'terraform init' to initialize Terraform
 * Apply Terraform changes automatically with auto-approval
 * Sync website files (HTML & CSS) to S3
-* Initiate Cypress tests to verify API endpoint responses (heartbeat check)
 
 
 
