@@ -9,8 +9,9 @@ Whenever a push occurs to the Main branch, it activates the GitHub actions I've 
 * Execute 'terraform init' to initialize Terraform
 * Apply Terraform changes automatically with auto-approval
 * Sync website files (HTML & CSS) to S3
-* Initiate Cypress tests to verify API endpoint responses (heartbeat check)
 
 
 
 to put my understanding of Terraform, i will configure and provision all the infrastructures with it.
+
+![Cloud Resume - Page 1 (1)](https://github.com/Ann-Anidumaka/AWS-Cloud-Resume-Challenge/assets/132375232/bf6bab2f-f010-4dfe-afb9-82b409c5eb1a)
